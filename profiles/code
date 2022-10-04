@@ -1,7 +1,7 @@
 # AppArmor profile for code editor
 # Version of program profiled: 1.66.0
 # Homepage: https://github.com/krathalan/apparmor-profiles
-# Copyright 2019-2021 (C) krathalan; Licensed under GPLv3
+# Copyright 2019-2022 (C) krathalan; Licensed under GPLv3
 
 abi <abi/3.0>,
 include <tunables/global>
@@ -10,7 +10,7 @@ profile code /usr/{bin,lib/code}/{code,code-oss,code.js} {
   include <abstractions/base>
 
   /usr/{bin,lib/code}/{code,code-oss,code.js} r,
-  /usr/{bin,lib/electron17}/{electron,electron17} rPx,
+  /usr/{bin,lib/electron19}/{electron,electron19} rPx,
 
   /usr/lib/code/{,**} r,
 
@@ -19,19 +19,19 @@ profile code /usr/{bin,lib/code}/{code,code-oss,code.js} {
   deny /dev/pts/* rw,
 }
 
-profile electron17 /usr/{bin,lib/electron17}/{electron,electron17} {
+profile electron19 /usr/{bin,lib/electron19}/{electron,electron19} {
   include <abstractions/base>
   include <abstractions/fonts>
   include <abstractions/krathalans-common-gui>
 
   # Electron spawns multiple processes
   /usr/bin/{bash,dash} rix,
-  /usr/{bin,lib/electron17}/{electron,electron17} rPx,
+  /usr/{bin,lib/electron19}/{electron,electron19} rPx,
   owner /dev/shm/.org.chromium.Chromium.* rw,
   owner /tmp/.org.chromium.Chromium.* rw,
   
   # Sandbox
-  /usr/lib/electron17/chrome-sandbox rPx,
+  /usr/lib/electron19/chrome-sandbox rPx,
 
   # Networking
   include <abstractions/krathalans-networking>
@@ -109,7 +109,7 @@ profile electron17 /usr/{bin,lib/electron17}/{electron,electron17} {
   /usr/bin/shellcheck rix,
 }
 
-profile chrome-sandbox-electron17 /usr/lib/electron17/chrome-sandbox {
+profile chrome-sandbox-electron19 /usr/lib/electron19/chrome-sandbox {
   include <abstractions/base>
 
   capability dac_override,
@@ -118,10 +118,10 @@ profile chrome-sandbox-electron17 /usr/lib/electron17/chrome-sandbox {
   capability sys_admin,
   capability sys_chroot,
   capability sys_ptrace,
-  ptrace read peer=electron17,
+  ptrace read peer=electron19,
   
-  /usr/lib/electron17/chrome-sandbox r,
-  /usr/lib/electron17/electron rPx,
+  /usr/lib/electron19/chrome-sandbox r,
+  /usr/lib/electron19/electron rPx,
 
   @{PROC}/*/ r,
   @{PROC}/*/{oom_adj,oom_score_adj} w,
