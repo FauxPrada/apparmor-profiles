@@ -6,7 +6,7 @@
 abi <abi/3.0>,
 include <tunables/global>
 
-profile code /usr/{bin,lib/code}/{code,code-oss,code.js} {
+profile code /usr/{bin,lib/code}/{code,code-oss,code.js} flags=(enforce) {
   include <abstractions/base>
 
   /usr/{bin,lib/code}/{code,code-oss,code.js} r,
@@ -14,19 +14,25 @@ profile code /usr/{bin,lib/code}/{code,code-oss,code.js} {
 
   /usr/lib/code/{,**} r,
 
+  # Terminal
+  include <abstractions/bash>
+  #/usr/bin/bash ix,
+  /{usr/,}/bin/{,ba,da}sh ix,
+
   # Deny unnecessary permissions
   deny /dev/tty* rw,
   deny /dev/pts/* rw,
 }
 
-profile electron19 /usr/{bin,lib/electron19}/{electron,electron19} {
+profile electron19 /usr/{bin,lib/electron19}/{electron,electron19} flags=(complain) {
   include <abstractions/base>
   include <abstractions/fonts>
   include <abstractions/krathalans-common-gui>
 
   # Electron spawns multiple processes
-  /usr/bin/{bash,dash} rix,
+  /{usr/,}/bin/{,ba,da}sh rix,
   /usr/{bin,lib/electron19}/{electron,electron19} rPx,
+  /usr/lib/postfix/{bin/,sbin/,}spawn rPx,
   owner /dev/shm/.org.chromium.Chromium.* rw,
   owner /tmp/.org.chromium.Chromium.* rw,
   
@@ -83,6 +89,7 @@ profile electron19 /usr/{bin,lib/electron19}/{electron,electron19} {
   owner @{user_share_dirs}/recently-used.xbel* rw,
   owner /tmp/chromium-upload-* w,
   owner /tmp/vscode-type*/{,**} rw,
+  /usr/lib/dri/ rPx,
 
   # File picker
   @{system_share_dirs}/glib-2.0/schemas/gschemas.compiled r,
@@ -107,22 +114,25 @@ profile electron19 /usr/{bin,lib/electron19}/{electron,electron19} {
   # https://marketplace.visualstudio.com/items?itemName=timonwong.shellcheck
   # Extension is MIT Licensed: https://github.com/timonwong/vscode-shellcheck
   /usr/bin/shellcheck rix,
+  # Python
+  signal send set=term peer=electron19//null-/usr/bin/python3.*,
 }
 
-profile chrome-sandbox-electron19 /usr/lib/electron19/chrome-sandbox {
-  include <abstractions/base>
+profile chrome-sandbox-electron19 /usr/lib/electron19/chrome-sandbox flags=(enforce) {
+ include <abstractions/base>
 
-  capability dac_override,
-  capability setgid,
-  capability setuid,
-  capability sys_admin,
-  capability sys_chroot,
-  capability sys_ptrace,
-  ptrace read peer=electron19,
+ capability dac_override,
+ capability setgid,
+ capability setuid,
+ capability sys_admin,
+ capability sys_chroot,
+ capability sys_ptrace,
+ capability sys_resource,
+ ptrace read peer=electron19,
   
-  /usr/lib/electron19/chrome-sandbox r,
-  /usr/lib/electron19/electron rPx,
+ /usr/lib/electron19/chrome-sandbox r,
+ /usr/lib/electron19/electron rPx,
 
-  @{PROC}/*/ r,
-  @{PROC}/*/{oom_adj,oom_score_adj} w,
+ @{PROC}/*/ r,
+ @{PROC}/*/{oom_adj,oom_score_adj} w,
 }
