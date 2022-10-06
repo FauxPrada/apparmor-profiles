@@ -16,7 +16,6 @@ profile code /usr/{bin,lib/code}/{code,code-oss,code.js} flags=(enforce) {
 
   # Terminal
   include <abstractions/bash>
-  #/usr/bin/bash ix,
   /{usr/,}/bin/{,ba,da}sh ix,
 
   # Deny unnecessary permissions
@@ -89,7 +88,6 @@ profile electron19 /usr/{bin,lib/electron19}/{electron,electron19} flags=(compla
   owner @{user_share_dirs}/recently-used.xbel* rw,
   owner /tmp/chromium-upload-* w,
   owner /tmp/vscode-type*/{,**} rw,
-  /usr/lib/dri/ rPx,
 
   # File picker
   @{system_share_dirs}/glib-2.0/schemas/gschemas.compiled r,
