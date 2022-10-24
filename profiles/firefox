@@ -72,6 +72,9 @@ profile firefox /{usr/bin,usr/lib/firefox*}/firefox* {
   # Wayland
   owner /dev/shm/wayland.mozilla.ipc.* rw,
 
+  # PipeWire
+  owner @{HOME}/.config/pipewire/client* r,
+
   # Firefox profiles, cache
   owner @{HOME}/.mozilla/{,**} rwlk,
   owner @{HOME}/.cache/mozilla/{,**} rwlk,
